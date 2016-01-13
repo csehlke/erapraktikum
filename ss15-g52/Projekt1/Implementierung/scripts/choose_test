@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+echo "Please choose an input file. Exit with CTRL+C"
+select FILENAME in ../Testdaten/*;
+do
+  build/main -s $FILENAME
+done

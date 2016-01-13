@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>Assembler Aufgaben</title>
+  </head>
+   <body>
+    <h1>1.84 Dichtemessung</h1>
+     Für die folgenden Aufgaben werden jeweils 100 Werte, die bei den jeweiligen Aufgaben genauer definiert sind, in der Datei ui.txt abgespeichert. Mit Hilfe des mitgelieferten C-Rahmenprogramms read.c werden diese nun in den Hauptspeicher des PCs eingelesen und in den drei Feldern intval (Datentyp INTEGER, 2 oder 4 Bytes), data1 und data2 (jeweils Datentyp FLOAT, 4 Bytes) abgespeichert. Weiterhin werden durch das C-Rahmenprogramm zwei Felder results1 und results2 (jeweils Datentyp FLOAT, 4 Bytes) angelegt. Jedes dieser Felder besitzt entsprechend der Anzahl von Meßwerten 100 Elemente. Zur Berechnung verschiedener elektrischer Größen aus den Meßwertreihen wird vom C-Rahmenprogramm aus die Assembler-Routine calc aufgerufen, die folgendermaßen deklariert ist<br>
+    <br>
+    void calc(int *intval, float *data1, float *data2, float *results1, float *results2)<br>
+    <br>
+    Übergeben werden dabei 5 Zeiger auf die jeweiligen Datenfelder. Intval ist dabei ein Zeiger auf das INTEGER-Feld, die übrigen Parameter sind Zeiger auf die zuvor angelegten FLOAT-Felder.<br>
+    <br>
+    Erstellen Sie sich zum Testen eine möglichst realitätsnahe Datei ui.txt.<br>
+    <br>
+    <br>
+     Die Dichte eines Stoffes ergibt sich als Quotient von Gewicht zu Volumen. Um die Dichte zu bestimmen wurden 100 Meßwerte des Volumens und des Gewichts ermittelt. In dieser Aufgabe soll die Dichte nach folgendem Verfahren ermittelt werden: <br>
+    <br>
+    1. Für jedes Meßwertpaar wird die Dichte ermittelt und in results1 ausgegeben.<br>
+    2. Die 10 minimalsten und die 10 maximalsten Werte werden gestrichen.<br>
+    3. Aus den restlichen 80 Werten wird der Mittelwert berechnet.<br>
+    4. Anschließend ist noch die Differenz zwischen dem Mittelwert und dem größten Wert (dmax) sowie die Differenz zwischen dem Mittelwert und dem kleinsten Wert (dmin) zu berechnen.<br>
+    <br>
+    <br>
+    Geben Sie Ihr Ergebnis results2 wie folgt aus:<br>
+    <br>
+    1. Wert: Mittelwert<br>
+    2. Wert: dmax<br>
+    3. Wert: dmin<br>
+    <br>
+    <br>
+    Inhalt data1: Gewicht<br>
+    Inhalt data2: Volumen<br>
+    
+       <hr>
+    <address><a href="mailto:czornack@in.tum.de">Jantho</a></address>
+<!-- Created: Mon Sep 23 16:53:02 Westeuropäische Sommerzeit 2002 -->
+<!-- hhmts start -->
+Last modified: Tue Oct 29 16:45:55 Westeuropäische Normalzeit 2002
+<!-- hhmts end -->
+  </body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>VHDL</title>
+  </head>
+
+  <body>
+    <h1>Speichertechnologie - DRAM-Interface</h1>
+
+    <h2>3.93 Adressmultiplexer und Bankselektion</h2>
+
+    Entwickeln Sie ein VHDL-Programm, das den Multiplexer implementiert.<br>
+    <br>
+    <br>
+    Zusammenfassung: <br>
+    Es soll eine Schaltung entwickelt werden, die ein dynamisches RAM (DRAM) unter Berücksichtigung der nötigen Zeitbedingungen ansteuert.<br>
+    <br>
+    Beschreibung der Grundlagen: <br>
+    <br>
+    In heutigen Computern wird als (langsamer) Arbeitsspeicher fast ausschließlich dynamisches RAM eingesetzt. Dieses benötigt für ein Bit intern nur einen Transistor und einen kleinen Kondensator statt mindestens 4 oder 6 Transistoren wie in einem statischen RAM (SRAM). Durch den internen Aufbau von DRAM ist allerdings etwas Aufwand und große Sorgfalt bei der Ansteuerung notwendig. Mit einem falschen Timing kann dabei auch eine 'harmlose' Leseoperation den Inhalt einer ganzen Speicher-Zeile (512-4096Bit) vernichten! <br>
+    <br>
+    Als Beispiel sollen hier vier 4M*32Bit (=16MByte, 'PS2-SIMM') DRAMs angesteuert werden. Zur Vereinfachung werden beschleunigte Datenzugriffe (Fast-Page oder EDO) und auch der eigentlich unbedingt nötige Refresh nicht berücksichtigt. <br>
+    <br>
+    Ein 4M*32Bit DRAM hat dabei folgende Anschlüsse: <br>
+    <br>
+
+    <table border="1">
+	<tr> <td><b>Signal</b></td> <td><b>IO</b></td> <td><b>Bedeutung</b></td> </tr>
+	<tr> <td>/RAS</td> <td>I</td> <td>Row Address Strobe, Selektion der Zeilenadresse</td> </tr>
+	<tr> <td>/CAS(3:0)</td> <td>I</td> <td>Column Address Strobe, Selektion der Spaltenadresse und der 4 Bytes in 32Bit</td> </tr>
+	<tr> <td>/WE</td> <td>I</td> <td>Write Enable, Schreiben/Lesen</td> </tr>
+	<tr> <td>A(10:0)</td> <td>I</td> <td>Gemultiplexte Zeilen/Spaltenadressen</td> </tr>
+	<tr> <td>D(31:0)</td> <td>I/O</td> <td>Datenein/ausgänge</td> </tr>
+    </table>
+
+    <br>
+    Ein DRAM-Lesezugriff mit einem anschließenden Schreibzugriff ist in Bild 1 gezeigt. Die 22-Bit Adresse wird dabei gemultiplext in zwei Teilen übertragen, zuerst die 11 höherwerigen Bits (Row), dann die 11 niederwertigen Bits (Column). Zur fallenden Flanke von /RAS bzw. /CAS müssen die Adressen stabil anliegen. Für einen Schreibzugriff müssen vor der fallenden Flanke von /CAS auch noch /WE und die Schreibdaten stabil sein. Wie zu sehen, ist die Ansteuerung im Prinzip nicht an einen Takt gebunden (asynchron), es sind jedoch für ein 70ns-DRAM folgende Zeiten einzuhalten bzw. zu berücksichtigen: <br>
+    <br>
+
+    <table border="1">
+	<tr> <td>/RAS low</td> <td>t<sub>RAC</sub> = min. 70ns (Zeilenzugriffszeit)</td> </tr>
+	<tr> <td>/RAS <FONT FACE=Symbol>&#221;</FONT> bis /RAS <FONT FACE=Symbol>&#223;</FONT></td> <td>t<sub>RP</sub> = min. 70ns (Precharge-Time)</td> </tr>
+	<tr> <td>/CAS low</td> <td>t<sub>CAC</sub> = min. 30ns (Spaltenzugriffszeit)</td> </tr>
+	<tr> <td>A stabil vor /RAS / /CAS <FONT FACE=Symbol>&#223;</FONT></td> <td>t<sub>SA</sub> = 0ns (Address Setup)</td> </tr>
+	<tr> <td>A stabil nach /RAS / /CAS <FONT FACE=Symbol>&#223;</FONT></td> <td>t<sub>HA</sub> = min. 10ns (Address Hold)</td> </tr>
+	<tr> <td>/WE und D stabil vor /CAS <FONT FACE=Symbol>&#223;</FONT> (Write)</td> <td>t<sub>SD</sub> = min. 10ns</td> </tr>
+	<tr> <td>/WE und D stabil nach /CAS <FONT FACE=Symbol>&#223;</FONT> (Write)</td> <td>t<sub>HD</sub> = min. 10ns</td> </tr>
+	<tr> <td>D gültig (Read)</td> <td>min. t<sub>RAC</sub> + min. t<sub>CAC</sub> </td> </tr>
+    </table>
+
+    <br>
+    Eine Verletzung von t<sub>RAC</sub> führt dazu, daß das DRAM nicht in der Lage ist, aus der Speichermatrix eine gesamte Zeile fehlerfrei auszulesen. Damit ist zunächst der Lesezugriff fehlerhaft. Da die Speicherkondensatoren einer Zeile aber durch jeden Zugriff entladen werden, müssen die Zeilendaten am Ende des Zugriffs wieder in die Speichermatrix zurückgeschrieben werden (sog. Precharge). Wurde die Zeile falsch ausgelesen, wird durch das Zurückschreiben der Zeileninhalt komplett zerstört. Ähnlich führt eine Verletzung von t<sub>RP</sub> dazu, daß das Zurückschreiben nicht vollständig erfolgen kann und diese Zeile ebenfalls zerstört wird. <br>
+    <br>
+
+    <br>
+    <center>
+      <img src="3.92.1.png" border="0"><br>
+      Bild 1: DRAM-Lesezugriff mit anschließendem Schreibzugriff
+    </center>
+    <br>
+
+    <br>
+    Aufgabenbeschreibung: DRAM-Interface <br>
+    <br>
+    In Bild 2 ist ein Überblick über das zu entwickelnde DRAM-Interface gegeben. Es besteht neben den vier DRAM-Modulen aus dem Timing-Generator und dem Adressmultiplexer/Byte- und Bankselektor. <br>
+    <br>
+    
+    <br>
+    <center>
+      <img src="3.92.2.png" border="0"><br>
+      Bild 2: DRAM-Interface
+    </center>
+    <br>
+
+    <br>
+    Der Timing-Generator erzeugt mit Hilfe eines Taktes von 40MHz auf ein Zugriffssignal ACCESS hin eine korrekte und zulässige Abfolge von /RAS, /CAS und MUX. Zusätzlich wird für die angeschlossene Hardware ein Bestätigungssignal READY gegeben, wenn die Daten abgenommen (Write) oder auf den Datenbus gegeben wurden (Read). <br>
+    <br>
+    Der Multiplexer bezieht die Adressen vom Systemadressbus AD(25:2). Ebenfalls am Systembus liegen die 4 Byte-Enable-Signale /BE(3:0), die bestimmen, welche Bytes aus den 32Bit-Daten gelesen/geschrieben werden sollen. Mit AD(25:2) /BE(3:0), /CAS , und MUX erzeugt der Multiplexer die gemultiplexten DRAM-Adressen und spricht das entsprechende DRAM-Modul mit /CASx(3:0) (x:0-3) an. <br>
+
+    <hr>
+    <address><a href="mailto:czornack@in.tum.de">Jantho</a></address>
+<!-- Created: Tue Oct 29 13:30:23 Westeuropäische Normalzeit 2002 -->
+<!-- hhmts start -->
+Last modified: Mon Nov 04 14:11:03 Westeuropäische Normalzeit 2002
+<!-- hhmts end -->
+  </body>
+</html>
